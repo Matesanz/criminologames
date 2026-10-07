@@ -15,7 +15,7 @@ Quien lee el libro y resuelve sus casos, sea en la web o en papel. Se le supone 
 _Avoid_: Jugador, usuario, estudiante, alumno
 
 **Versión web**:
-La forma principal del libro, leída y jugada en el navegador. Es la fuente de la que derivan las ediciones impresas.
+La forma principal del libro, leída y jugada en el navegador. Es el origen del que derivan las ediciones impresas.
 _Avoid_: App, versión online
 
 **Edición impresa**:
