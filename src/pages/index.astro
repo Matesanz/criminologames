@@ -1,0 +1,21 @@
+---
+import Pagina from "../layouts/Pagina.astro";
+import { casosDelLibro } from "../casos/libro";
+
+const casos = casosDelLibro();
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Pagina titulo="Casos">
+  <h1>criminologames</h1>
+  <p>Aprende criminología resolviendo casos.</p>
+  <ul>
+    {
+      casos.map((caso) => (
+        <li>
+          <a href={`${base}casos/${caso.id}/`}>{caso.titulo}</a>
+        </li>
+      ))
+    }
+  </ul>
+</Pagina>

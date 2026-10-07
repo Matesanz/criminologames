@@ -1,0 +1,20 @@
+---
+import Pagina from "../../../layouts/Pagina.astro";
+import { casosDelLibro } from "../../../casos/libro";
+import { html } from "../../../casos/markdown";
+import type { Caso } from "../../../casos/cargarCaso";
+
+export function getStaticPaths() {
+  return casosDelLibro().map((caso) => ({ params: { id: caso.id }, props: { caso } }));
+}
+
+const { caso } = Astro.props as { caso: Caso };
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Pagina titulo={caso.titulo}>
+  <p class="etiqueta">Lección · {caso.concepto}</p>
+  <h1>{caso.titulo}</h1>
+  <Fragment set:html={html(caso.leccion)} />
+  <a class="boton" href={`${base}casos/${caso.id}/pregunta/`}>Ir al caso</a>
+</Pagina>
