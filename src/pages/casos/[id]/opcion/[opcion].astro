@@ -1,0 +1,51 @@
+---
+import Pagina from "../../../../layouts/Pagina.astro";
+import { casosDelLibro } from "../../../../casos/libro";
+import { html } from "../../../../casos/markdown";
+import type { Caso, Opcion } from "../../../../casos/cargarCaso";
+
+export function getStaticPaths() {
+  return casosDelLibro().flatMap((caso) =>
+    caso.opciones.map((opcion) => ({
+      params: { id: caso.id, opcion: opcion.id },
+      props: { caso, opcion },
+    })),
+  );
+}
+
+const { caso, opcion } = Astro.props as { caso: Caso; opcion: Opcion };
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Pagina titulo={opcion.correcta ? "Solución comentada" : "Error comentado"}>
+  <p class="etiqueta">{caso.titulo} · {opcion.texto}</p>
+  {
+    opcion.correcta ? (
+      <h1 class="correcto">¡Correcto!</h1>
+    ) : (
+      <h1 class="incorrecto">No es esa</h1>
+    )
+  }
+  <Fragment set:html={html(opcion.comentario)} />
+  {
+    opcion.correcta ? (
+      <a class="boton" href={`${base}`}>Volver al inicio</a>
+    ) : (
+      <a class="boton" href={`${base}casos/${caso.id}/pregunta/`}>
+        Volver a intentarlo
+      </a>
+    )
+  }
+  <nav class="navegacion">
+    <a href={`${base}casos/${caso.id}/`}>Releer la lección</a>
+  </nav>
+</Pagina>
+
+<style>
+  .correcto {
+    color: var(--correcto);
+  }
+  .incorrecto {
+    color: var(--acento);
+  }
+</style>

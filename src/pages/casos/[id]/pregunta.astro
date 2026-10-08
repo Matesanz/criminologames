@@ -1,0 +1,50 @@
+---
+import Pagina from "../../../layouts/Pagina.astro";
+import { casosDelLibro } from "../../../casos/libro";
+import type { Caso } from "../../../casos/cargarCaso";
+
+export function getStaticPaths() {
+  return casosDelLibro().map((caso) => ({ params: { id: caso.id }, props: { caso } }));
+}
+
+const { caso } = Astro.props as { caso: Caso };
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Pagina titulo={caso.pregunta}>
+  <p class="etiqueta">{caso.titulo}</p>
+  <h1>{caso.pregunta}</h1>
+  <ul class="opciones">
+    {
+      caso.opciones.map((opcion) => (
+        <li>
+          <a href={`${base}casos/${caso.id}/opcion/${opcion.id}/`}>{opcion.texto}</a>
+        </li>
+      ))
+    }
+  </ul>
+  <nav class="navegacion">
+    <a href={`${base}casos/${caso.id}/`}>Releer la lección</a>
+  </nav>
+</Pagina>
+
+<style>
+  .opciones {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .opciones a {
+    display: block;
+    padding: 1rem;
+    border: 1px solid var(--borde);
+    border-radius: 0.5rem;
+    color: var(--texto);
+    text-decoration: none;
+  }
+  .opciones a:hover,
+  .opciones a:focus-visible {
+    border-color: var(--acento);
+  }
+</style>

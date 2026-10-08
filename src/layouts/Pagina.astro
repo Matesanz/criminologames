@@ -1,0 +1,96 @@
+---
+interface Props {
+  titulo: string;
+}
+const { titulo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo} · criminologames</title>
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --fondo: #faf7f2;
+    --texto: #1f1d1a;
+    --suave: #6b655c;
+    --acento: #9b2c2c;
+    --correcto: #276749;
+    --borde: #e2dcd2;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #1a1917;
+      --texto: #ece8e1;
+      --suave: #a8a196;
+      --acento: #f08080;
+      --correcto: #68d391;
+      --borde: #3a3732;
+      color-scheme: dark;
+    }
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  h1,
+  h2 {
+    line-height: 1.2;
+  }
+  a {
+    color: var(--acento);
+  }
+  blockquote {
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 3px solid var(--borde);
+    color: var(--suave);
+  }
+  .etiqueta {
+    color: var(--suave);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+  .boton {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    background: var(--acento);
+    color: var(--fondo);
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .navegacion {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 1rem;
+  }
+</style>
