@@ -22,11 +22,26 @@ opciones:
     correcta: true        # exactamente una opción correcta
   - id: otra-opcion
     texto: Texto de otra opción
+escena:
+  imagen: mi-caso/escena.svg   # en public/imagenes/
+  puntos:                      # lo que el lector puede examinar
+    - detalle: mi-detalle      # el detalle que abre
+      etiqueta: Nombre del punto
+      x: 40                    # posición sobre la imagen, en % del ancho
+      y: 25                    # … y del alto
+detalles:
+  - id: mi-detalle
+    titulo: Título del detalle
+    tipo: ilustracion          # o «documento»
+    imagen: mi-caso/detalle.svg  # solo en las ilustraciones
 ```
+
+Las imágenes viven en `public/imagenes/`. Como los puntos se colocan encima con porcentajes, se puede cambiar una imagen por otra sin tocar el texto del caso (si cambia la composición, basta con reajustar `x` e `y`).
 
 El **cuerpo** se divide en secciones con encabezados de primer nivel (`#`); dentro de cada una se puede usar Markdown libremente (`##`, negritas, citas…):
 
 - `# Lección`
+- `# Detalle: <id>`: el texto de un detalle; obligatorio en los documentos, opcional en las ilustraciones
 - `# Solución comentada` (la de la opción correcta)
 - `# Error comentado: <id>`, una por cada opción incorrecta
 

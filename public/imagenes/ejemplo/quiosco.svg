@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="Helvetica, Arial, sans-serif">
+  <title>El mostrador del quiosco, de cerca</title>
+  <rect width="800" height="500" fill="#e9e4da"/>
+  <rect x="80" y="60" width="640" height="260" rx="8" fill="#c7d9c4" stroke="#3d5a3a" stroke-width="4"/>
+  <g fill="#fffaf2" stroke="#6b655c" stroke-width="2">
+    <rect x="110" y="90" width="90" height="120"/><rect x="215" y="90" width="90" height="120"/>
+    <rect x="320" y="90" width="90" height="120"/><rect x="425" y="90" width="90" height="120"/>
+  </g>
+  <rect x="540" y="90" width="150" height="120" fill="#3d5a3a" opacity="0.15" stroke="#3d5a3a" stroke-width="2"/>
+  <text x="615" y="155" font-size="15" text-anchor="middle" fill="#3d5a3a">caja abierta</text>
+  <text x="615" y="175" font-size="15" text-anchor="middle" fill="#3d5a3a">(vacía)</text>
+  <rect x="80" y="320" width="640" height="40" fill="#3d5a3a"/>
+  <g stroke="#6b655c" stroke-width="2" fill="none">
+    <path d="M300 420 l14 -10 l14 10" /><path d="M360 440 l14 -10 l14 10" />
+  </g>
+  <text x="400" y="470" font-size="14" text-anchor="middle" fill="#6b655c">Revistas caídas frente al mostrador</text>
+</svg>

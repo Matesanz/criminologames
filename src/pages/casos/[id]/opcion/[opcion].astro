@@ -37,6 +37,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
     )
   }
   <nav class="navegacion">
+    {!opcion.correcta && <a href={`${base}casos/${caso.id}/escena/`}>Volver a la escena</a>}
     <a href={`${base}casos/${caso.id}/`}>Releer la lección</a>
   </nav>
 </Pagina>

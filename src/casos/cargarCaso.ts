@@ -15,7 +15,28 @@ export interface Caso {
   pregunta: string;
   leccion: string;
   opciones: Opcion[];
+  escena: Escena;
+  detalles: Detalle[];
 }
+
+export interface Escena {
+  imagen: string;
+  puntos: Punto[];
+}
+
+/** Un punto marcado en la escena que el lector puede examinar. */
+export interface Punto {
+  /** Identificador del detalle que se abre al examinarlo. */
+  detalle: string;
+  etiqueta: string;
+  /** Posición sobre la imagen, en % del ancho (x) y del alto (y). */
+  x: number;
+  y: number;
+}
+
+export type Detalle =
+  | { id: string; titulo: string; tipo: "ilustracion"; imagen: string; texto: string }
+  | { id: string; titulo: string; tipo: "documento"; texto: string };
 
 export type ResultadoCarga =
   | { ok: true; caso: Caso }
@@ -120,6 +141,110 @@ export function cargarCaso(markdown: string): ResultadoCarga {
     }
   }
 
+  const escena = cabecera.escena;
+  const puntosCabecera = Array.isArray(escena?.puntos) ? escena.puntos : [];
+  if (escena == null || typeof escena !== "object") {
+    errores.push("Cabecera: falta la «escena».");
+  } else {
+    if (typeof escena.imagen !== "string" || escena.imagen.trim() === "") {
+      errores.push("Cabecera: a la escena le falta el campo obligatorio «imagen».");
+    }
+    if (puntosCabecera.length === 0) {
+      errores.push("Cabecera: la escena necesita al menos un punto que examinar.");
+    }
+  }
+
+  puntosCabecera.forEach((p: Record<string, unknown> | null, i: number) => {
+    for (const eje of ["x", "y"]) {
+      const valor = p?.[eje];
+      if (typeof valor !== "number" || valor < 0 || valor > 100) {
+        errores.push(
+          `Cabecera: el punto ${i + 1} de la escena tiene «${eje}» fuera de la imagen (debe estar entre 0 y 100 y es ${valor}).`,
+        );
+      }
+    }
+  });
+
+  const detallesCabecera = Array.isArray(cabecera.detalles)
+    ? cabecera.detalles
+    : [];
+  const idsDetalles = new Set(
+    detallesCabecera.map((d: { id?: unknown } | null) => d?.id),
+  );
+  const abiertos = new Set(
+    puntosCabecera.map((p: { detalle?: unknown } | null) => p?.detalle),
+  );
+  puntosCabecera.forEach((p: { detalle?: unknown } | null, i: number) => {
+    if (!idsDetalles.has(p?.detalle)) {
+      errores.push(
+        `Cabecera: el punto ${i + 1} de la escena abre el detalle «${p?.detalle}», que no existe.`,
+      );
+    }
+  });
+  for (const id of idsDetalles) {
+    if (!abiertos.has(id)) {
+      errores.push(`Cabecera: ningún punto de la escena abre el detalle «${id}».`);
+    }
+  }
+
+  puntosCabecera.forEach((p: Record<string, unknown> | null, i: number) => {
+    if (typeof p?.etiqueta !== "string" || p.etiqueta.trim() === "") {
+      errores.push(
+        `Cabecera: al punto ${i + 1} de la escena le falta el campo obligatorio «etiqueta».`,
+      );
+    }
+  });
+
+  detallesCabecera.forEach((d: Record<string, unknown> | null, i: number) => {
+    for (const campo of ["id", "titulo"]) {
+      const valor = d?.[campo];
+      if (typeof valor !== "string" || valor.trim() === "") {
+        errores.push(
+          `Cabecera: al detalle ${i + 1} le falta el campo obligatorio «${campo}».`,
+        );
+      }
+    }
+  });
+
+  const detallesVistos = new Set<unknown>();
+  for (const d of detallesCabecera) {
+    if (detallesVistos.has(d?.id)) {
+      errores.push(
+        `Cabecera: el identificador de detalle «${d?.id}» está repetido.`,
+      );
+    }
+    detallesVistos.add(d?.id);
+  }
+
+  for (const titulo of secciones.keys()) {
+    const detalle = /^Detalle: (.+)$/.exec(titulo);
+    if (detalle && !idsDetalles.has(detalle[1])) {
+      errores.push(
+        `Cuerpo: la sección «# ${titulo}» no corresponde a ningún detalle.`,
+      );
+    }
+  }
+
+  for (const d of detallesCabecera) {
+    if (d?.tipo === "ilustracion") {
+      if (typeof d.imagen !== "string" || d.imagen.trim() === "") {
+        errores.push(
+          `Cabecera: al detalle «${d.id}» le falta el campo obligatorio «imagen».`,
+        );
+      }
+    } else if (d?.tipo === "documento") {
+      if (!secciones.get(`Detalle: ${d.id}`)) {
+        errores.push(
+          `Cuerpo: el documento «${d.id}» no tiene su sección «# Detalle: ${d.id}».`,
+        );
+      }
+    } else {
+      errores.push(
+        `Cabecera: el detalle «${d?.id}» tiene el tipo «${d?.tipo}»; debe ser «ilustracion» o «documento».`,
+      );
+    }
+  }
+
   if (errores.length > 0) return { ok: false, errores };
 
   const opciones: Opcion[] = opcionesCabecera.map(
@@ -145,6 +270,23 @@ export function cargarCaso(markdown: string): ResultadoCarga {
       pregunta: cabecera.pregunta,
       leccion: secciones.get("Lección")!,
       opciones,
+      escena: {
+        imagen: cabecera.escena.imagen,
+        puntos: cabecera.escena.puntos.map(
+          (p: Punto): Punto => ({
+            detalle: p.detalle,
+            etiqueta: p.etiqueta,
+            x: p.x,
+            y: p.y,
+          }),
+        ),
+      },
+      detalles: cabecera.detalles.map((d: Detalle): Detalle => {
+        const texto = secciones.get(`Detalle: ${d.id}`) ?? "";
+        return d.tipo === "ilustracion"
+          ? { id: d.id, titulo: d.titulo, tipo: d.tipo, imagen: d.imagen, texto }
+          : { id: d.id, titulo: d.titulo, tipo: d.tipo, texto };
+      }),
     },
   };
 }

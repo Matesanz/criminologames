@@ -12,11 +12,34 @@ opciones:
     correcta: true
   - id: vecino
     texto: El vecino del quinto
+escena:
+  imagen: el-portal/escena.svg
+  puntos:
+    - detalle: farola
+      etiqueta: La farola
+      x: 20
+      y: 35
+    - detalle: declaracion-vecino
+      etiqueta: Declaración del vecino
+      x: 70.5
+      y: 60
+detalles:
+  - id: farola
+    titulo: La farola del portal
+    tipo: ilustracion
+    imagen: el-portal/farola.svg
+  - id: declaracion-vecino
+    titulo: Declaración del vecino
+    tipo: documento
 ---
 
 # Lección
 
 La memoria no es una grabación.
+
+# Detalle: declaracion-vecino
+
+«Lo vi clarísimo desde mi ventana.»
 
 # Solución comentada
 
@@ -39,6 +62,128 @@ function errores(markdown: string): string[] {
 }
 
 describe("cargarCaso", () => {
+  test("un punto no tiene etiqueta", () => {
+    const caso = sinLinea(casoValido, "      etiqueta: La farola");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: al punto 1 de la escena le falta el campo obligatorio «etiqueta».",
+    );
+  });
+
+  test("un detalle no tiene título", () => {
+    const caso = sinLinea(casoValido, "    titulo: La farola del portal");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: al detalle 1 le falta el campo obligatorio «titulo».",
+    );
+  });
+
+  test("dos detalles comparten identificador", () => {
+    const caso = casoValido.replace(
+      "  - id: declaracion-vecino\n",
+      "  - id: farola\n    titulo: Otra farola\n    tipo: ilustracion\n    imagen: otra.svg\n  - id: declaracion-vecino\n",
+    );
+
+    expect(errores(caso)).toContain(
+      "Cabecera: el identificador de detalle «farola» está repetido.",
+    );
+  });
+
+  test("sobra una sección de detalle que no corresponde a ningún detalle", () => {
+    const caso = casoValido + "\n# Detalle: buzon\n\nNada.\n";
+
+    expect(errores(caso)).toContain(
+      "Cuerpo: la sección «# Detalle: buzon» no corresponde a ningún detalle.",
+    );
+  });
+
+  test("un detalle tiene un tipo desconocido", () => {
+    const caso = casoValido.replace("    tipo: documento\n", "    tipo: video\n");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: el detalle «declaracion-vecino» tiene el tipo «video»; debe ser «ilustracion» o «documento».",
+    );
+  });
+
+  test("un detalle ilustrado no tiene imagen", () => {
+    const caso = sinLinea(casoValido, "    imagen: el-portal/farola.svg");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: al detalle «farola» le falta el campo obligatorio «imagen».",
+    );
+  });
+
+  test("un documento no tiene texto", () => {
+    const caso = casoValido.replace(
+      "# Detalle: declaracion-vecino\n\n«Lo vi clarísimo desde mi ventana.»\n\n",
+      "",
+    );
+
+    expect(errores(caso)).toContain(
+      "Cuerpo: el documento «declaracion-vecino» no tiene su sección «# Detalle: declaracion-vecino».",
+    );
+  });
+
+  test("un punto abre un detalle que no existe", () => {
+    const caso = casoValido.replace(
+      "    - detalle: farola\n",
+      "    - detalle: farol\n",
+    );
+
+    expect(errores(caso)).toContain(
+      "Cabecera: el punto 1 de la escena abre el detalle «farol», que no existe.",
+    );
+  });
+
+  test("un detalle no se puede alcanzar desde ningún punto", () => {
+    const caso = casoValido.replace(
+      "    - detalle: farola\n      etiqueta: La farola\n      x: 20\n      y: 35\n",
+      "",
+    );
+
+    expect(errores(caso)).toContain(
+      "Cabecera: ningún punto de la escena abre el detalle «farola».",
+    );
+  });
+
+  test("la posición de un punto está fuera de la imagen", () => {
+    const caso = casoValido.replace("      x: 70.5\n", "      x: 120\n");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: el punto 2 de la escena tiene «x» fuera de la imagen (debe estar entre 0 y 100 y es 120).",
+    );
+  });
+
+  test("la posición de un punto no es un número", () => {
+    const caso = casoValido.replace("      y: 35\n", "      y: arriba\n");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: el punto 1 de la escena tiene «y» fuera de la imagen (debe estar entre 0 y 100 y es arriba).",
+    );
+  });
+
+  test("el caso no tiene escena", () => {
+    const caso = casoValido.replace(/escena:[\s\S]*?(?=detalles:)/, "");
+
+    expect(errores(caso)).toContain("Cabecera: falta la «escena».");
+  });
+
+  test("la escena no tiene imagen", () => {
+    const caso = sinLinea(casoValido, "  imagen: el-portal/escena.svg");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: a la escena le falta el campo obligatorio «imagen».",
+    );
+  });
+
+  test("la escena no tiene puntos", () => {
+    const caso = casoValido.replace(/  puntos:[\s\S]*?(?=detalles:)/, "");
+
+    expect(errores(caso)).toContain(
+      "Cabecera: la escena necesita al menos un punto que examinar.",
+    );
+  });
+
   test("el archivo no tiene cabecera", () => {
     expect(errores("# Lección\n\nHola.\n")).toEqual([
       "Cabecera: el archivo debe empezar con una cabecera entre líneas «---».",
@@ -200,6 +345,33 @@ describe("cargarCaso", () => {
             correcta: false,
             comentario:
               "El vecino estaba muy seguro, pero la seguridad no predice la exactitud.",
+          },
+        ],
+        escena: {
+          imagen: "el-portal/escena.svg",
+          puntos: [
+            { detalle: "farola", etiqueta: "La farola", x: 20, y: 35 },
+            {
+              detalle: "declaracion-vecino",
+              etiqueta: "Declaración del vecino",
+              x: 70.5,
+              y: 60,
+            },
+          ],
+        },
+        detalles: [
+          {
+            id: "farola",
+            titulo: "La farola del portal",
+            tipo: "ilustracion",
+            imagen: "el-portal/farola.svg",
+            texto: "",
+          },
+          {
+            id: "declaracion-vecino",
+            titulo: "Declaración del vecino",
+            tipo: "documento",
+            texto: "«Lo vi clarísimo desde mi ventana.»",
           },
         ],
       },

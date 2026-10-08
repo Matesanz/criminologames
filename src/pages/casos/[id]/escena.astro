@@ -1,0 +1,115 @@
+---
+import Pagina from "../../../layouts/Pagina.astro";
+import { casosDelLibro } from "../../../casos/libro";
+import type { Caso } from "../../../casos/cargarCaso";
+
+export function getStaticPaths() {
+  return casosDelLibro().map((caso) => ({ params: { id: caso.id }, props: { caso } }));
+}
+
+const { caso } = Astro.props as { caso: Caso };
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+const detalle = (id: string) => `${base}casos/${caso.id}/detalle/${id}/`;
+---
+
+<Pagina titulo={caso.titulo}>
+  <p class="etiqueta">{caso.titulo}</p>
+  <h1 class="pregunta">{caso.pregunta}</h1>
+  <p class="instrucciones">Examina los puntos marcados en la escena.</p>
+
+  <div class="escena">
+    <img src={`${base}imagenes/${caso.escena.imagen}`} alt={`Escena: ${caso.titulo}`} />
+    {
+      caso.escena.puntos.map((punto, i) => (
+        <a
+          class="marcador"
+          data-detalle={punto.detalle}
+          href={detalle(punto.detalle)}
+          style={`left: ${punto.x}%; top: ${punto.y}%`}
+          aria-label={`${i + 1}. ${punto.etiqueta}`}
+          title={punto.etiqueta}
+        >
+          {i + 1}
+        </a>
+      ))
+    }
+  </div>
+
+  <ol class="puntos">
+    {
+      caso.escena.puntos.map((punto) => (
+        <li>
+          <a data-detalle={punto.detalle} href={detalle(punto.detalle)}>
+            {punto.etiqueta}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+
+  <a class="boton" href={`${base}casos/${caso.id}/pregunta/`}>Responder</a>
+  <nav class="navegacion">
+    <a href={`${base}casos/${caso.id}/`}>Releer la lección</a>
+  </nav>
+</Pagina>
+
+<script is:inline define:vars={{ clave: `examinados:${caso.id}` }}>
+  try {
+    const examinados = JSON.parse(localStorage.getItem(clave) ?? "[]");
+    for (const enlace of document.querySelectorAll("[data-detalle]")) {
+      if (examinados.includes(enlace.dataset.detalle)) {
+        enlace.classList.add("examinado");
+      }
+    }
+  } catch {}
+</script>
+
+<style>
+  .pregunta {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .instrucciones {
+    color: var(--suave);
+    margin-top: 0;
+  }
+  .escena {
+    position: relative;
+    margin: 1rem -1rem;
+  }
+  .escena img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .marcador {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: var(--acento);
+    color: #fff;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+  }
+  .marcador.examinado {
+    background: var(--suave);
+  }
+  .puntos a.examinado {
+    color: var(--suave);
+  }
+  .puntos a.examinado::after {
+    content: " ✓";
+  }
+  @media (min-width: 42rem) {
+    .escena {
+      margin: 1rem 0;
+    }
+  }
+</style>
