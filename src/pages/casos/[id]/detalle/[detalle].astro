@@ -1,0 +1,75 @@
+---
+import Pagina from "../../../../layouts/Pagina.astro";
+import { casosDelLibro } from "../../../../casos/libro";
+import { html } from "../../../../casos/markdown";
+import type { Caso, Detalle } from "../../../../casos/cargarCaso";
+
+export function getStaticPaths() {
+  return casosDelLibro().flatMap((caso) =>
+    caso.detalles.map((detalle) => ({
+      params: { id: caso.id, detalle: detalle.id },
+      props: { caso, detalle },
+    })),
+  );
+}
+
+const { caso, detalle } = Astro.props as { caso: Caso; detalle: Detalle };
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Pagina titulo={detalle.titulo}>
+  <p class="etiqueta">{caso.titulo}</p>
+  <h1>{detalle.titulo}</h1>
+  {
+    detalle.tipo === "ilustracion" && (
+      <img
+        class="ilustracion"
+        src={`${base}imagenes/${detalle.imagen}`}
+        alt={detalle.titulo}
+      />
+    )
+  }
+  {
+    detalle.texto && (
+      <div class:list={[detalle.tipo]}>
+        <Fragment set:html={html(detalle.texto)} />
+      </div>
+    )
+  }
+  <a class="boton" href={`${base}casos/${caso.id}/escena/`}>Volver a la escena</a>
+</Pagina>
+
+<script
+  is:inline
+  define:vars={{ clave: `examinados:${caso.id}`, detalle: detalle.id }}
+>
+  try {
+    const examinados = JSON.parse(localStorage.getItem(clave) ?? "[]");
+    if (!examinados.includes(detalle)) {
+      localStorage.setItem(clave, JSON.stringify([...examinados, detalle]));
+    }
+  } catch {}
+</script>
+
+<style>
+  .ilustracion {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1rem 0;
+  }
+  .documento {
+    padding: 1rem 1.25rem;
+    background: var(--papel);
+    border: 1px solid var(--borde);
+    border-radius: 0.25rem;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1rem;
+  }
+  .documento :global(blockquote) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--texto);
+  }
+</style>

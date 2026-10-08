@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" font-family="Helvetica, Arial, sans-serif">
+  <title>Plano de la calle del quiosco, visto desde arriba</title>
+  <!-- Aceras y calzada -->
+  <rect width="800" height="600" fill="#e9e4da"/>
+  <rect y="170" width="800" height="260" fill="#8d8a85"/>
+  <line x1="0" y1="300" x2="800" y2="300" stroke="#f4f1ea" stroke-width="4" stroke-dasharray="30 24"/>
+  <g fill="#f4f1ea">
+    <rect x="300" y="180" width="60" height="14"/><rect x="300" y="214" width="60" height="14"/>
+    <rect x="300" y="248" width="60" height="14"/><rect x="300" y="282" width="60" height="14"/>
+    <rect x="300" y="316" width="60" height="14"/><rect x="300" y="350" width="60" height="14"/>
+    <rect x="300" y="384" width="60" height="14"/>
+  </g>
+  <text x="20" y="160" font-size="14" fill="#6b655c">ACERA DEL QUIOSCO</text>
+  <text x="20" y="455" font-size="14" fill="#6b655c">ACERA DE ENFRENTE</text>
+
+  <!-- Quiosco -->
+  <rect x="150" y="50" width="140" height="90" rx="6" fill="#c7d9c4" stroke="#3d5a3a" stroke-width="3"/>
+  <rect x="150" y="128" width="140" height="12" fill="#3d5a3a"/>
+  <text x="220" y="100" font-size="18" text-anchor="middle" fill="#1f1d1a" font-weight="bold">Quiosco</text>
+
+  <!-- Farola -->
+  <circle cx="330" cy="150" r="9" fill="#f6d365" stroke="#6b655c" stroke-width="3"/>
+  <circle cx="330" cy="150" r="40" fill="#f6d365" opacity="0.18"/>
+
+  <!-- Terraza del bar y camarero -->
+  <rect x="510" y="20" width="270" height="140" rx="6" fill="#f2e3cf" stroke="#9c7a54" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="645" y="44" font-size="16" text-anchor="middle" fill="#6b4f2e" font-weight="bold">Bar La Esquina</text>
+  <g fill="#fffaf2" stroke="#9c7a54" stroke-width="2">
+    <circle cx="545" cy="85" r="16"/><circle cx="545" cy="130" r="16"/>
+    <circle cx="700" cy="85" r="16"/><circle cx="740" cy="130" r="16"/>
+  </g>
+  <circle cx="600" cy="110" r="14" fill="#5b7fa6" stroke="#1f1d1a" stroke-width="2"/>
+  <text x="600" y="148" font-size="13" text-anchor="middle" fill="#1f1d1a">camarero</text>
+
+  <!-- Coche de la conductora -->
+  <rect x="390" y="315" width="130" height="62" rx="14" fill="#b04a4a" stroke="#1f1d1a" stroke-width="2"/>
+  <rect x="470" y="323" width="34" height="46" rx="6" fill="#d9e4ec" stroke="#1f1d1a" stroke-width="1.5"/>
+  <circle cx="487" cy="346" r="9" fill="#5b7fa6" stroke="#1f1d1a" stroke-width="1.5"/>
+  <text x="455" y="400" font-size="13" text-anchor="middle" fill="#f4f1ea">conductora</text>
+
+  <!-- Paseante -->
+  <circle cx="220" cy="505" r="14" fill="#5b7fa6" stroke="#1f1d1a" stroke-width="2"/>
+  <text x="220" y="543" font-size="13" text-anchor="middle" fill="#1f1d1a">paseante</text>
+
+  <!-- Sol: es de día -->
+  <g transform="translate(745 525)" fill="#f6d365" stroke="#c9a227" stroke-width="2">
+    <circle r="18"/>
+  </g>
+  <text x="745" y="575" font-size="12" text-anchor="middle" fill="#6b655c">12:30 h</text>
+</svg>

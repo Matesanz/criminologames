@@ -1,5 +1,9 @@
 # criminologames
 
+## Regla de diseño
+
+Toda mecánica de la web debe tener un equivalente en papel; lo que solo existe en la web es una comodidad prescindible. Consulta `docs/adr/0003-todo-tiene-equivalente-en-papel.md` antes de añadir o cambiar cómo se juega un caso.
+
 ## Agent skills
 
 ### Issue tracker
