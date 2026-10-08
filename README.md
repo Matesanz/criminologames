@@ -7,7 +7,7 @@ Un libro que enseña criminología mediante casos de lógica. Vive primero como 
 
 ## Escribir un caso
 
-Cada caso es un archivo Markdown en `contenido/casos/`. Ver [`contenido/casos/ejemplo.md`](contenido/casos/ejemplo.md).
+Cada caso es un archivo Markdown en `contenido/casos/`. Ver [`contenido/casos/robo-del-quiosco.md`](contenido/casos/robo-del-quiosco.md).
 
 La **cabecera** (entre líneas `---`) lleva los datos:
 
